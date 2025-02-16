@@ -3,9 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Importação do tema customizado */
-@import '../styles/theme.css';
-
 /* Configurações base para todos os elementos */
 @layer base {
   /* Define a cor da borda padrão */

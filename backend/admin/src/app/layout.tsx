@@ -2,7 +2,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Providers } from './providers'
-import React from 'react'
 
 // Configuração da fonte Inter do Google Fonts
 const inter = Inter({ subsets: ['latin'] })
@@ -32,7 +31,8 @@ export default function RootLayout({
 }) {
   return (
     // Define o idioma e aplica classes base para todo o HTML
-    <html lang="pt-BR" className="h-full bg-slate-950 antialiased" suppressHydrationWarning>
+    <html lang="pt-BR" className="h-full bg-slate-950 antialiased">
+      <head />
       {/* Aplica a fonte Inter e estilos base no body */}
       <body className={`${inter.className} h-full`}>
         {/* Providers envolvem a aplicação com contextos necessários (auth, theme, etc) */}

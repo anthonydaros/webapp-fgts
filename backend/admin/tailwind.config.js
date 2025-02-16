@@ -3,7 +3,6 @@ module.exports = {
   // Define quais arquivos devem ser processados pelo Tailwind
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', // Suporte para componentes Tremor
   ],
 
   // Configuração do tema
@@ -140,8 +139,5 @@ module.exports = {
   ],
 
   // Plugins utilizados
-  plugins: [
-    require('@tailwindcss/forms'), // Adiciona estilos para formulários
-    require('tailwindcss-animate'), // Adiciona classes de animação
-  ],
+  plugins: [],
 } 
