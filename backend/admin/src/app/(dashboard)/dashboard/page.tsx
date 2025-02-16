@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { DateRange } from "react-day-picker"
 import { DateRangeFilter } from '@/components/ui/date-range-filter'
 
+// Dados estáticos para as métricas principais
 const stats = [
   {
     name: 'Total de Propostas',
@@ -48,6 +49,7 @@ const stats = [
   },
 ]
 
+// Dados do gráfico de simulações e propostas
 const chartdata = [
   {
     month: 'Jan',
@@ -76,6 +78,7 @@ const chartdata = [
   },
 ]
 
+// Configuração das cores e labels dos gráficos
 const chartConfig = {
   simulacoes: {
     label: 'Simulações',
@@ -87,6 +90,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+// Dados do gráfico de status das propostas
 const statusData = [
   {
     name: 'Aprovadas',
@@ -105,6 +109,7 @@ const statusData = [
   },
 ]
 
+// Página principal do dashboard
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -113,12 +118,14 @@ export default function DashboardPage() {
     to: undefined,
   })
 
+  // Redireciona para login se não estiver autenticado
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
     }
   }, [status, router])
 
+  // Exibe loading enquanto verifica a autenticação
   if (status === 'loading') {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -127,12 +134,14 @@ export default function DashboardPage() {
     )
   }
 
+  // Não renderiza nada se não estiver autenticado
   if (status === 'unauthenticated') {
     return null
   }
 
   return (
-    <div className="space-y-6 p-1 sm:p-4">
+    <div className="space-y-6 p-1 sm:p-4 animate-in fade-in duration-500">
+      {/* Filtro de data */}
       <div className="flex justify-end mb-4">
         <DateRangeFilter
           dateRange={dateRange}
@@ -140,6 +149,7 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* Cards de métricas principais */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
           <Card 
@@ -169,7 +179,9 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Gráficos de análise */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Gráfico de área - Simulações vs Propostas */}
         <Card className="bg-white/5 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/10 shadow-xl transition-all duration-300 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: '400ms' }}>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -246,6 +258,7 @@ export default function DashboardPage() {
           </CardFooter>
         </Card>
 
+        {/* Gráfico de barras - Status das Propostas */}
         <Card className="bg-white/5 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/10 shadow-xl transition-all duration-300 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: '500ms' }}>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -300,6 +313,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Lista de atividades recentes */}
       <Card className="bg-white/5 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/10 shadow-xl transition-all duration-300 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: '600ms' }}>
         <CardHeader>
           <CardTitle className="text-slate-100">Últimas Atividades</CardTitle>

@@ -1,102 +1,72 @@
 # syntax=docker/dockerfile:1.4
 
-# 1. Base image
+# Estágio base com dependências comuns
 FROM node:18-alpine AS base
-
-# Install system dependencies
-RUN apk add --no-cache \
-    libc6-compat \
-    openssl \
-    netcat-openbsd
-
-# Create app directory
 WORKDIR /app
+ENV NODE_ENV=development
+RUN apk add --no-cache libc6-compat netcat-openbsd
 
-# 2. Development dependencies
+# Estágio de desenvolvimento
 FROM base AS development
+# Copiar arquivos de configuração
 COPY package*.json ./
-COPY admin/package*.json admin/
+COPY tsconfig.json ./
+COPY .env.example ./.env
+COPY prisma ./prisma/
 
-# Install dependencies (including devDependencies)
-RUN npm ci --legacy-peer-deps
-WORKDIR /app/admin
-RUN npm ci --legacy-peer-deps
-WORKDIR /app
+# Instalar dependências de desenvolvimento
+RUN npm install
 
-# Copy application files
+# Copiar código fonte
 COPY . .
 
-# Generate Prisma Client
+# Gerar cliente Prisma
 RUN npx prisma generate
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-RUN chown -R nextjs:nodejs /app
+# Instalar dependências do admin
+WORKDIR /app/admin
+COPY admin/package*.json ./
+RUN npm install
+WORKDIR /app
 
-# Copy and set permissions for entrypoint script
+# Configurar entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-USER nextjs
-
-EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["docker-entrypoint.sh"]
-
-# 3. Production dependencies
-FROM base AS production-deps
-COPY package*.json ./
-COPY admin/package*.json admin/
-
-# Install production dependencies only
-RUN npm ci --only=production --legacy-peer-deps
-WORKDIR /app/admin
-RUN npm ci --only=production --legacy-peer-deps
-WORKDIR /app
-
-# 4. Build stage
-FROM base AS builder
-COPY --from=development /app/node_modules ./node_modules
-COPY . .
-
-# Generate Prisma Client
-RUN npx prisma generate
-
-# Build Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN cd admin && npm run build
-
-# 5. Production image
+# Estágio de produção
 FROM base AS production
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+WORKDIR /app
 
-# Copy necessary files
-COPY --from=production-deps /app/node_modules ./node_modules
-COPY --from=production-deps /app/admin/node_modules ./admin/node_modules
-COPY --from=builder /app/admin/.next ./admin/.next
-COPY --from=builder /app/admin/public ./admin/public
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/scripts ./scripts
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/admin/package*.json ./admin/
+# Copiar arquivos de configuração
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY .env.example ./.env
+COPY prisma ./prisma/
+
+# Instalar apenas dependências de produção
+RUN npm install --only=production
+
+# Copiar código fonte
+COPY . .
+
+# Gerar cliente Prisma
+RUN npx prisma generate
+
+# Instalar dependências de produção do admin
+WORKDIR /app/admin
+COPY admin/package*.json ./
+RUN npm install --only=production
+WORKDIR /app
+
+# Build do admin
+WORKDIR /app/admin
+RUN npm run build
+WORKDIR /app
+
+# Configurar entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
-
-# Set permissions
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-RUN chown -R nextjs:nodejs /app
-
-USER nextjs
-
-EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["docker-entrypoint.sh"] 
+CMD ["npm", "start"] 

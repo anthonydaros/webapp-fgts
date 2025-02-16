@@ -1,6 +1,8 @@
 version: '3.8'
 
+# Definição dos serviços
 services:
+  # Banco de dados MySQL
   mysql:
     image: mysql:8.0
     container_name: webapp-fgts-mysql
@@ -17,11 +19,14 @@ services:
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - webapp-network
 
+  # Interface de administração do MySQL
   adminer:
     image: adminer
     container_name: webapp-fgts-adminer
@@ -33,13 +38,16 @@ services:
       ADMINER_DESIGN: dracula
     depends_on:
       - mysql
+    networks:
+      - webapp-network
 
-  app:
+  # Aplicação Next.js (Admin)
+  admin:
     build:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: webapp-fgts-app
+    container_name: webapp-fgts-admin
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -56,7 +64,15 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    networks:
+      - webapp-network
 
+# Definição dos volumes
 volumes:
   mysql-data:
-    name: webapp-fgts-mysql-data 
+    name: webapp-fgts-mysql-data
+
+# Definição das redes
+networks:
+  webapp-network:
+    driver: bridge 

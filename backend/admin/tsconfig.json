@@ -1,37 +1,80 @@
 {
   "compilerOptions": {
+    // Versão do ECMAScript alvo
     "target": "es5",
+    
+    // Bibliotecas que o projeto pode usar
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    
+    // Permite arquivos JavaScript
     "allowJs": true,
+    
+    // Ignora erros em definições de tipo de bibliotecas
     "skipLibCheck": true,
+    
+    // Habilita todas as verificações de tipo estritas
     "strict": true,
+    
+    // Não emite arquivos de saída
     "noEmit": true,
+    
+    // Permite build incremental
     "incremental": true,
+    
+    // Sistema de módulos
     "module": "esnext",
+    
+    // Permite interoperabilidade entre CommonJS e ES Modules
     "esModuleInterop": true,
+    
+    // Estratégia de resolução de módulos
     "moduleResolution": "bundler",
+    
+    // Permite importar arquivos JSON como módulos
     "resolveJsonModule": true,
+    
+    // Garante que cada arquivo seja um módulo
     "isolatedModules": true,
+    
+    // Suporte a JSX do React
     "jsx": "preserve",
+    
+    // Plugins do TypeScript
     "plugins": [
       {
         "name": "next"
       }
     ],
+    
+    // Configuração de paths para imports
     "paths": {
       "@/*": ["./src/*"]
     },
+    
+    // Diretório base para resolução de módulos
     "baseUrl": ".",
+    
+    // Força consistência no case dos arquivos
     "forceConsistentCasingInFileNames": true,
+    
+    // Não permite any implícito
     "noImplicitAny": true,
+    
+    // Força retornos explícitos em funções
     "noImplicitReturns": true,
+    
+    // Reporta variáveis locais não utilizadas
     "noUnusedLocals": true,
+    
+    // Reporta parâmetros não utilizados
     "noUnusedParameters": true
   },
+  
+  // Arquivos incluídos na compilação
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -39,6 +82,8 @@
     ".next/types/**/*.ts",
     "src/**/*"
   ],
+  
+  // Arquivos excluídos da compilação
   "exclude": [
     "node_modules"
   ]

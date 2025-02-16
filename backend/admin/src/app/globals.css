@@ -1,37 +1,62 @@
+/* Importação dos estilos base do Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Importação do tema customizado */
 @import '../styles/theme.css';
 
+/* Configurações base para todos os elementos */
 @layer base {
+  /* Define a cor da borda padrão */
   * {
     @apply border-slate-700;
   }
+  /* Define o background e cor de texto padrão do body */
   body {
     @apply bg-slate-900 text-slate-50;
   }
 }
 
+/* Variáveis CSS para o tema da aplicação */
 :root {
+  /* Cores de background */
   --background: 15 23 42;
   --foreground: 248 250 252;
+  
+  /* Cores de cards */
   --card: 15 23 42;
   --card-foreground: 248 250 252;
+  
+  /* Cores de popovers */
   --popover: 15 23 42;
   --popover-foreground: 248 250 252;
+  
+  /* Cores primárias */
   --primary: 14 165 233;
   --primary-foreground: 248 250 252;
+  
+  /* Cores secundárias */
   --secondary: 51 65 85;
   --secondary-foreground: 248 250 252;
+  
+  /* Cores para elementos desabilitados/muted */
   --muted: 51 65 85;
   --muted-foreground: 148 163 184;
+  
+  /* Cores de destaque */
   --accent: 51 65 85;
   --accent-foreground: 248 250 252;
+  
+  /* Cores de destruição/erro */
   --destructive: 239 68 68;
   --destructive-foreground: 248 250 252;
+  
+  /* Cores de bordas e inputs */
   --border: 51 65 85;
   --input: 51 65 85;
   --ring: 14 165 233;
+  
+  /* Border radius padrão */
   --radius: 0.5rem;
 } 
