@@ -1,0 +1,19 @@
+{
+  "name": "fintech-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "init-db": "ts-node scripts/init-db.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.3.1",
+    "bcryptjs": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.0.0",
+    "prisma": "^6.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+} 

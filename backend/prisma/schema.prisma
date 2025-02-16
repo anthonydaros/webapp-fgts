@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  BROKER
+  SUPPORT
+  USER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum DocumentType {
+  RG
+  CNH
+}
+
+enum BankAccountType {
+  CHECKING
+  SAVINGS
+  PIX
+}
+
+enum PixKeyType {
+  CPF
+  EMAIL
+  PHONE
+  RANDOM
+}
+
+enum ProposalStatus {
+  PENDING
+  PROCESSING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum ActivityType {
+  LOGIN
+  LOGOUT
+  CREATE_PROPOSAL
+  UPDATE_PROPOSAL
+  DELETE_PROPOSAL
+  CREATE_BROKER
+  UPDATE_BROKER
+  DELETE_BROKER
+}
+
+enum LogType {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique @db.VarChar(255)
+  name            String    @db.VarChar(255)
+  password        String    @db.VarChar(255)
+  cpf             String    @unique @db.VarChar(14)
+  phone           String?   @db.VarChar(20)
+  role            UserRole  @default(USER)
+  status          Status    @default(ACTIVE)
+  motherName      String?   @db.VarChar(255)
+  documentType    DocumentType?
+  documentNumber  String?   @db.VarChar(20)
+  documentIssuer  String?   @db.VarChar(20)
+  address         String?   @db.VarChar(255)
+  addressNumber   String?   @db.VarChar(20)
+  complement      String?   @db.VarChar(100)
+  neighborhood    String?   @db.VarChar(100)
+  city            String?   @db.VarChar(100)
+  state           String?   @db.VarChar(2)
+  zipCode         String?   @db.VarChar(9)
+  bankType        BankAccountType?
+  bankCode        String?   @db.VarChar(5)
+  bankDigit       String?   @db.VarChar(2)
+  agency          String?   @db.VarChar(10)
+  agencyDigit     String?   @db.VarChar(2)
+  accountNumber   String?   @db.VarChar(20)
+  pixKeyType      PixKeyType?
+  pixKey          String?   @db.VarChar(255)
+  sellerUrl       String?   @db.VarChar(255)
+  bankParameters  Json?
+  referralUserId  String?
+  referralUser    User?     @relation("UserReferrals", fields: [referralUserId], references: [id], onDelete: SetNull)
+  referredUsers   User[]    @relation("UserReferrals")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  activities      Activity[]
+  proposals       Proposal[]
+
+  @@index([email])
+  @@index([cpf])
+  @@index([role])
+  @@index([status])
+  @@index([referralUserId])
+}
+
+model Activity {
+  id            String       @id @default(uuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          ActivityType
+  description   String       @db.Text
+  createdAt     DateTime     @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Proposal {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Decimal        @db.Decimal(10, 2)
+  status        ProposalStatus @default(PENDING)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  logs          Log[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Log {
+  id            String    @id @default(uuid())
+  proposalId    String?
+  proposal      Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  type          LogType
+  message       String    @db.Text
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+
+  @@index([proposalId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model AppConfig {
+  id              String    @id
+  appName         String    @db.VarChar(255)
+  primaryColor    String    @db.VarChar(7)
+  logo            String    @db.VarChar(255)
+  maxLoanAmount   Decimal   @db.Decimal(10, 2)
+  minLoanAmount   Decimal   @db.Decimal(10, 2)
+  maxInstallments Int       @db.Int
+  minInstallments Int       @db.Int
+  interestRate    Decimal   @db.Decimal(5, 4)
+  iofDaily        Decimal   @db.Decimal(6, 4)
+  iofAdditional   Decimal   @db.Decimal(6, 4)
+  cet             Decimal   @db.Decimal(6, 4)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+} 

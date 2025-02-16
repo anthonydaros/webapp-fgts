@@ -1,0 +1,11 @@
+# Block npass crawler
+User-agent: npass-bot
+Disallow: /
+
+# Block all crawlers from admin interface
+User-agent: *
+Disallow: /
+
+User-agent: *
+Disallow: /icons/
+Disallow: /*.png$ 
