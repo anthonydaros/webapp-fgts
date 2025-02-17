@@ -11,14 +11,89 @@ Sistema administrativo para gerenciamento de empréstimos FGTS, construído com 
 - [NextAuth.js](https://next-auth.js.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Shadcn/UI](https://ui.shadcn.com/)
+- [Docker](https://www.docker.com/)
 
 ## 📋 Pré-requisitos
 
-- Node.js 18+
-- MySQL 8+
-- NPM ou Yarn
+- Docker e Docker Compose
+- Node.js 18+ (para desenvolvimento local)
+- NPM ou Yarn (para desenvolvimento local)
 
-## 🔧 Instalação
+## 🐳 Rodando com Docker
+
+1. Clone o repositório
+```bash
+git clone <repository-url>
+cd webapp-fgts/backend
+```
+
+2. Configure as variáveis de ambiente
+```bash
+cp .env.example .env
+```
+Edite o arquivo `.env` com suas configurações
+
+3. Inicie os containers
+```bash
+# Construir as imagens
+docker-compose build
+
+# Iniciar os serviços
+docker-compose up -d
+
+# Verificar os logs
+docker-compose logs -f
+```
+
+### Serviços Docker
+
+O projeto utiliza Docker Compose para orquestrar os seguintes serviços:
+
+1. **MySQL (webapp-fgts-mysql)**
+   - Banco de dados principal
+   - Porta: 3307 (host) -> 3306 (container)
+   - Credenciais:
+     - Root: root/root
+     - Aplicação: webapp/webapp123
+   - Volume: webapp-fgts-mysql-data
+
+2. **Adminer (webapp-fgts-adminer)**
+   - Interface web para gerenciamento do MySQL
+   - Porta: 8080
+   - URL: http://localhost:8080
+   - Tema: Dracula
+
+3. **Admin Dashboard (webapp-fgts-admin)**
+   - Painel administrativo Next.js
+   - Porta: 3000
+   - URL: http://localhost:3000
+   - Hot Reload habilitado em desenvolvimento
+
+### Comandos Docker Úteis
+
+```bash
+# Parar todos os serviços
+docker-compose down
+
+# Remover volumes (banco de dados)
+docker-compose down -v
+
+# Reconstruir um serviço específico
+docker-compose build admin
+
+# Ver logs de um serviço específico
+docker-compose logs -f admin
+
+# Reiniciar um serviço
+docker-compose restart admin
+
+# Executar comando em um container
+docker-compose exec admin sh
+```
+
+## 🔧 Instalação Local (Desenvolvimento)
+
+Se preferir rodar localmente sem Docker:
 
 1. Clone o repositório
 ```bash
@@ -76,7 +151,9 @@ backend/
 │   │   ├── lib/          # Utilitários
 │   │   └── types/        # Definições TypeScript
 ├── prisma/                # Schema e migrações
-└── scripts/               # Scripts utilitários
+├── scripts/               # Scripts utilitários
+└── docker/               # Configurações Docker
+    └── mysql/            # Scripts de inicialização MySQL
 ```
 
 ## 🛠️ Desenvolvimento
